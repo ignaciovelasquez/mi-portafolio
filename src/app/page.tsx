@@ -15,6 +15,13 @@ async function getProjects() {
   }`;
   return client.fetch(query);
 }
+const sandboxItems = await client.fetch(`*[_type == "sandbox"]{
+    title,
+    description,
+    "imageUrl": image.asset->url,
+    technologies,
+    projectUrl
+  }`);
 interface Project {
   _id: string;
   title: string;
@@ -22,6 +29,13 @@ interface Project {
   description: string;
   imageUrl: string | null;
   technologies: string[];
+}
+interface SandboxItem {
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  technologies: string[];
+  projectUrl: string;
 }
 
 // 2. MODIFICACIÓN: Agregamos "async" a la función Home
@@ -226,6 +240,63 @@ export default async function Home() {
             </div>
 
           </div>
+        </div>
+      </section>
+      {/* SECCIÓN 4: SANDBOX (CODE LAB) - ¡Tu nueva sección abajo del todo! */}
+      <section className="max-w-6xl mx-auto px-4 py-16 border-t border-gray-900">
+        <h2 className="text-3xl font-bold text-center tracking-tight mb-4">
+          SANDBOX (CODE LAB)
+        </h2>
+        <p className="text-gray-400 text-center max-w-xl mx-auto mb-12 text-sm">
+          Espacio de experimentación y proyectos nativos. Demostración de fundamentos sólidos en desarrollo web clásico.
+        </p>
+
+        {/* Renderizado de las tarjetas cuadradas simples similares a tus proyectos */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sandboxItems.map((item: SandboxItem) => (
+            <div 
+              key={item.title} 
+              className="group bg-gray-950 border border-gray-900 rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:border-gray-700"
+            >
+              <div>
+                {/* Imagen Cuadrada de Sanity */}
+                {item.imageUrl && (
+                  <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-900 mb-4">
+                    <Image 
+                      src={item.imageUrl} 
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                )}
+                
+                <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
+                <p className="text-gray-400 text-xs line-clamp-3 mb-4">{item.description}</p>
+              </div>
+
+              <div>
+                {/* Tags de tecnologías utilizadas */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {item.technologies?.map((tech: string) => (
+                    <span key={tech} className="text-[10px] bg-gray-900 text-gray-400 px-2.5 py-1 rounded-md uppercase font-mono">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Botón directo al HTML puro dentro de /public */}
+                <a 
+                  href={item.projectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center bg-white text-black text-xs font-semibold py-2.5 rounded-xl transition-colors hover:bg-gray-200"
+                >
+                  Ver Proyecto Nativo
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
